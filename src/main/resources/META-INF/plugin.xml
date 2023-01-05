@@ -26,5 +26,12 @@
        Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
   <extensions defaultExtensionNs="com.intellij">
 
+    <!--在设置中添加猪齿鱼插件配置项-->
+    <applicationConfigurable parentId="Other Settings"
+                             instance="com.github.thefuckingcode.intellijagile.config.ChoerodonApplicationConfigurable"
+                             id="com.github.thefuckingcode.intellijagile.config.ChoerodonApplicationConfigurable"
+                             displayName="Choerodon Plugin"/>
+<!--    设置应用级别的配置，相当于spring的注入bean。作用于是应用层-->
+    <applicationService serviceImplementation="com.github.thefuckingcode.intellijagile.config.ChoerodonPluginOauthConfigState"/>
   </extensions>
 </idea-plugin>
