@@ -1,0 +1,51 @@
+<application>
+  <component name="DynamicPluginEnabler">
+    <trackers>
+      <map>
+        <entry key="2JoxmQXb86qVNcXkMce1VTKSaKu">
+          <value>
+            <ProjectPluginTracker />
+          </value>
+        </entry>
+      </map>
+    </trackers>
+  </component>
+  <component name="PropertyService"><![CDATA[{
+  "keyToString": {
+    "CWM_LOGGING_VERSION": "1",
+    "LANGUAGE_DETECTOR_ASKED_BEFORE": "true",
+    "PluginConfigurable.selectionTab": "1",
+    "RunOnceActivity.se.text.search": "true",
+    "bundled.plugins.list.saved.version": "IC-223.8214.52",
+    "eclipse.projects.detected": "",
+    "fileTypeChangedCounter": "1",
+    "fontSizeToResetConsole": "13.0",
+    "fontSizeToResetEditor": "13.0",
+    "gotit.previous.run": "IC-223.8214.52",
+    "ide.memory.adjusted": "true",
+    "ignore.implicit.log.directory.path": "true",
+    "installed.kotlin.plugin.version": "222-1.7.10-release-334-IJ4459.24",
+    "previousColorScheme": "_@user_Darcula",
+    "registry.to.advanced.settings.migration.build": "IC-222.4459.24",
+    "tasks.pass.word.conversion.enforced": "true"
+  },
+  "keyToStringList": {
+    "fileTypeDetectors": [
+      "com.intellij.ide.scratch.ScratchFileServiceImpl$Detector",
+      "com.android.tools.idea.sqlite.fileType.SqliteFileTypeDetector",
+      "com.android.tools.idea.profilers.capture.MemoryCaptureFileType$Detector",
+      "org.jetbrains.plugins.textmate.TextMateFileType$TextMateFileDetector"
+    ]
+  }
+}]]></component>
+  <component name="ShownTips">{
+  &quot;shownTips&quot;: {
+    &quot;ShowUsages&quot;: 1672843230507
+  }
+}</component>
+  <component name="TerminalCommandHistoryManager">
+    <command-history-files>
+      <command-history-file filename="empty-dir-history" project-path="$USER_HOME$/IdeaProjects/empty-dir" last-access-time="1673190445455" />
+    </command-history-files>
+  </component>
+</application>

@@ -13,10 +13,16 @@ repositories {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.3.1")
+    version.set("2022.2.4")
     type.set("IC") // Target IDE Platform
 
     plugins.set(listOf(/* Plugin Dependencies */))
+}
+
+dependencies {
+    implementation("io.github.openfeign:feign-core:12.1")
+    implementation("io.github.openfeign.form:feign-form:3.8.0")
+    implementation("io.github.openfeign:feign-slf4j:12.1")
 }
 
 tasks {

@@ -1,0 +1,59 @@
+<application>
+  <component name="RecentProjectsManager">
+    <option name="additionalInfo">
+      <map>
+        <entry key="$USER_HOME$/IdeaProjects/empty-dir">
+          <value>
+            <RecentProjectMetaInfo frameTitle="empty-dir – misc.xml" projectWorkspaceId="2JoxmQXb86qVNcXkMce1VTKSaKu">
+              <option name="activationTimestamp" value="1673195460341" />
+              <option name="binFolder" value="$APPLICATION_HOME_DIR$/bin" />
+              <option name="build" value="IC-222.4459.24" />
+              <option name="buildTimestamp" value="1669110173478" />
+              <frame x="260" y="112" width="1400" height="1000" />
+              <option name="productionCode" value="IC" />
+              <option name="projectOpenTimestamp" value="1673195423482" />
+            </RecentProjectMetaInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="groups">
+      <list>
+        <ProjectGroup>
+          <option name="bottomGroup" value="true" />
+          <option name="name" value="Eclipse Projects" />
+          <option name="projects">
+            <list>
+              <option value="$USER_HOME$/IdeaProjects/junitWebDriver" />
+              <option value="$USER_HOME$/IdeaProjects/selenium" />
+              <option value="$USER_HOME$/IdeaProjects/test-manager-service-plugin" />
+              <option value="$USER_HOME$/IdeaProjects/agile-service" />
+              <option value="$USER_HOME$/IdeaProjects/jmeter-plugins-webdriver" />
+              <option value="$USER_HOME$/IdeaProjects/spring-boot-demo" />
+              <option value="$USER_HOME$/IdeaProjects/workflow-service" />
+              <option value="$USER_HOME$/IdeaProjects/base-service-plus" />
+              <option value="$USER_HOME$/IdeaProjects/LogMonitor" />
+              <option value="$USER_HOME$/IdeaProjects/gitlab4j-api" />
+              <option value="$USER_HOME$/IdeaProjects/selenium-demo2" />
+              <option value="$USER_HOME$/IdeaProjects/api-gateway" />
+              <option value="$USER_HOME$/IdeaProjects/hrds-prod-repo-service-hand" />
+              <option value="$USER_HOME$/IdeaProjects/choerodon-file" />
+              <option value="$USER_HOME$/IdeaProjects/gitlab-service" />
+              <option value="$USER_HOME$/IdeaProjects/test-manager-service" />
+              <option value="$USER_HOME$/IdeaProjects/test-manager-service-business" />
+              <option value="$USER_HOME$/IdeaProjects/demo" />
+              <option value="$USER_HOME$/IdeaProjects/jackson-date" />
+              <option value="$USER_HOME$/IdeaProjects/test-manager-service-plugin-bak" />
+              <option value="$USER_HOME$/IdeaProjects/oauth-server" />
+              <option value="$USER_HOME$/IdeaProjects/apache-jmeter-5.3 2" />
+              <option value="$USER_HOME$/IdeaProjects/provider-demo" />
+              <option value="$USER_HOME$/IdeaProjects/jps" />
+              <option value="$USER_HOME$/IdeaProjects/springboot" />
+            </list>
+          </option>
+        </ProjectGroup>
+      </list>
+    </option>
+    <option name="lastOpenedProject" value="$USER_HOME$/IdeaProjects/empty-dir" />
+  </component>
+</application>

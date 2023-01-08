@@ -1,0 +1,31 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+  <version>1.0-SNAPSHOT</version>
+  <idea-version since-build="221" until-build="231.*" />
+  <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+  <id>com.electricight.choerodon-plugin</id>
+  <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+  <name>Choerodon-plugin</name>
+  <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+  <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+  <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+  <description>小工具</description>
+  <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+  <depends>com.intellij.modules.platform</depends>
+  <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+  <extensions defaultExtensionNs="com.intellij">
+    // 将插件添加到侧边任务栏中
+    <toolWindow id="Choerodon Plugin" secondary="true" anchor="bottom" factoryClass="com.github.thefuckingcode.choerodonplugin.ui.ChoerodonPluginToolWindowFactory" />
+    <!--在设置中添加猪齿鱼插件配置项-->
+    <applicationConfigurable parentId="Other Settings" instance="com.github.thefuckingcode.choerodonplugin.config.ChoerodonApplicationConfigurable" id="com.github.thefuckingcode.choerodonplugin.config.ChoerodonApplicationConfigurable" displayName="Choerodon Plugin" />
+    <!--    设置应用级别的配置，相当于spring的注入bean。作用于是应用层-->
+    <applicationService serviceImplementation="com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState" />
+    <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.LoginService" />
+    <notificationGroup displayType="TOOL_WINDOW" id="com.github.thefuckingcode.choerodonplugin.notify.OauthConfigNotification" key="com.github.thefuckingcode.choerodonplugin.oauth.null" bundle="ChoerodonPlugin" />
+  </extensions>
+</idea-plugin>
