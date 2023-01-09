@@ -26,6 +26,9 @@
     <!--    设置应用级别的配置，相当于spring的注入bean。作用于是应用层-->
     <applicationService serviceImplementation="com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState" />
     <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.LoginService" />
+    <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.IamService" />
+    <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService" />
+    <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.AgileService" />
     <notificationGroup displayType="TOOL_WINDOW" id="com.github.thefuckingcode.choerodonplugin.notify.OauthConfigNotification" key="com.github.thefuckingcode.choerodonplugin.oauth.null" bundle="ChoerodonPlugin" />
   </extensions>
 </idea-plugin>

@@ -1,40 +1,43 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
 public class OrganizationVO {
-    private Long id;
-    private String name;
-    private String code;
+    private Long tenantId;
+    private String tenantName;
+    private String tenantNum;
 
-    public OrganizationVO(String name) {
-        this.name = name;
+    public OrganizationVO() {
     }
 
-    public Long getId() {
-        return id;
+    public OrganizationVO(String tenantName) {
+        this.tenantName = tenantName;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getTenantId() {
+        return tenantId;
     }
 
-    public String getName() {
-        return name;
+    public void setTenantId(Long tenantId) {
+        this.tenantId = tenantId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getTenantName() {
+        return tenantName;
     }
 
-    public String getCode() {
-        return code;
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public String getTenantNum() {
+        return tenantNum;
+    }
+
+    public void setTenantNum(String tenantNum) {
+        this.tenantNum = tenantNum;
     }
 
     @Override
     public String toString() {
-        return name;
+        return tenantName;
     }
 }

@@ -13,19 +13,18 @@
   <component name="PropertyService"><![CDATA[{
   "keyToString": {
     "CWM_LOGGING_VERSION": "1",
-    "LANGUAGE_DETECTOR_ASKED_BEFORE": "true",
-    "PluginConfigurable.selectionTab": "1",
     "RunOnceActivity.se.text.search": "true",
-    "bundled.plugins.list.saved.version": "IC-223.8214.52",
+    "accessToken": "24ce57b5-ec1c-416a-b1e1-4baf962f33b7",
+    "bundled.plugins.list.saved.version": "IC-222.4459.24",
     "eclipse.projects.detected": "",
     "fileTypeChangedCounter": "1",
     "fontSizeToResetConsole": "13.0",
     "fontSizeToResetEditor": "13.0",
-    "gotit.previous.run": "IC-223.8214.52",
+    "gotit.previous.run": "IC-222.4459.24",
     "ide.memory.adjusted": "true",
-    "ignore.implicit.log.directory.path": "true",
     "installed.kotlin.plugin.version": "222-1.7.10-release-334-IJ4459.24",
     "previousColorScheme": "_@user_Darcula",
+    "refreshToken": "fc4dbbf0-6c36-4c08-ad42-55f5585e2375",
     "registry.to.advanced.settings.migration.build": "IC-222.4459.24",
     "tasks.pass.word.conversion.enforced": "true"
   },
@@ -38,14 +37,4 @@
     ]
   }
 }]]></component>
-  <component name="ShownTips">{
-  &quot;shownTips&quot;: {
-    &quot;ShowUsages&quot;: 1672843230507
-  }
-}</component>
-  <component name="TerminalCommandHistoryManager">
-    <command-history-files>
-      <command-history-file filename="empty-dir-history" project-path="$USER_HOME$/IdeaProjects/empty-dir" last-access-time="1673190445455" />
-    </command-history-files>
-  </component>
 </application>

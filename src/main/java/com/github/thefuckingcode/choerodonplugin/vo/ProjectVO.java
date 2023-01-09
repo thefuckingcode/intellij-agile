@@ -5,6 +5,8 @@ public class ProjectVO {
     private String name;
     private String code;
 
+    public ProjectVO() {
+    }
 
     public ProjectVO(String name) {
         this.name = name;

@@ -2,14 +2,4 @@
   <component name="WindowManager">
     <frame x="260" y="112" width="1400" height="1000" />
   </component>
-  <component name="WindowStateApplicationService">
-    <state x="1290" y="979" width="300" height="100" key="ProcessPopupWindow" timestamp="1673194880622">
-      <screen x="0" y="25" width="1920" height="1175" />
-    </state>
-    <state x="1290" y="979" width="300" height="100" key="ProcessPopupWindow/0.-1415.2560.1415/0.25.1920.1175" timestamp="1673194880622" />
-    <state x="960" y="525" width="800" height="650" key="WELCOME_SCREEN" timestamp="1673195398109">
-      <screen x="0" y="25" width="1920" height="1175" />
-    </state>
-    <state x="960" y="525" width="800" height="650" key="WELCOME_SCREEN/0.-1415.2560.1415/0.25.1920.1175" timestamp="1673195398109" />
-  </component>
 </application>

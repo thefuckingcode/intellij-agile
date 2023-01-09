@@ -1,31 +1,28 @@
 <application>
   <component name="ActionsLocalSummary">
     <e n="$SelectAll">
-      <i c="11" l="1673195175427" />
+      <i c="3" l="1673279715633" />
     </e>
     <e n="EditorBackSpace">
-      <i c="7" l="1673195175574" />
+      <i c="1" l="1673279620264" />
     </e>
     <e n="EditorCopy">
-      <i c="2" l="1672849394319" />
+      <i c="1" l="1673279714159" />
     </e>
     <e n="EditorPaste">
-      <i c="10" l="1673195177288" />
+      <i c="2" l="1673279717012" />
+    </e>
+    <e n="WelcomeScreen.OpenEclipseProject">
+      <i c="1" l="1673279583052" />
     </e>
     <e n="WelcomeScreen.OpenProject">
-      <i c="1" l="1672836484507" />
+      <i c="2" l="1673279589151" />
     </e>
     <e n="com.intellij.diagnostic.IdeMessagePanel$4">
-      <i c="2" l="1673195183556" />
-    </e>
-    <e n="com.intellij.notification.NotificationAction$Simple">
-      <i c="5" l="1673190455193" />
+      <i c="2" l="1673279776909" />
     </e>
     <e n="com.intellij.toolWindow.ToolWindowHeader$HideAction">
-      <i c="4" l="1673195187221" />
-    </e>
-    <e n="com.intellij.toolWindow.ToolWindowHeader$ShowOptionsAction">
-      <i c="1" l="1672933009090" />
+      <i c="2" l="1673279770892" />
     </e>
   </component>
 </application>

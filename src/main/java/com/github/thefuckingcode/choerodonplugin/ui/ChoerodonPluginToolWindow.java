@@ -1,6 +1,9 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
 import com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState;
+import com.github.thefuckingcode.choerodonplugin.feign.ClientBuilder;
+import com.github.thefuckingcode.choerodonplugin.feign.IamClientApi;
+import com.github.thefuckingcode.choerodonplugin.service.IamService;
 import com.github.thefuckingcode.choerodonplugin.service.LoginService;
 import com.github.thefuckingcode.choerodonplugin.vo.IssueVO;
 import com.github.thefuckingcode.choerodonplugin.vo.OrganizationVO;
@@ -29,6 +32,7 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -123,9 +127,13 @@ public class ChoerodonPluginToolWindow {
         actionToolbar.setTargetComponent(this.getToolWindowContent());
 
         orgComboBox = new ComboBox<>();
+        orgComboBox.addItemListener(itemEvent -> {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                System.out.println(itemEvent.getItem());
+            }
+        });
         orgComboBox.setSize(200, -1);
-        orgComboBox.addItem(new OrganizationVO("org1"));
-        orgComboBox.addItem(new OrganizationVO("org2"));
+        setOrg(orgComboBox);
         projectComboBox = new ComboBox<>();
         projectComboBox.setSize(200, -1);
         projectComboBox.addItem(new ProjectVO("proj1"));
@@ -155,6 +163,14 @@ public class ChoerodonPluginToolWindow {
 
         tablePanel.add(actionPanel, BorderLayout.NORTH, 0);
         tablePanel.add(new JBScrollPane(issueTable), BorderLayout.CENTER, 1);
+    }
+
+    private void setOrg(JComboBox orgComboBox) {
+        IamClientApi iamClientApi = ClientBuilder.buildClient(ApplicationManager.getApplication().getService(ChoerodonPluginOauthConfigState.class).getChoerodonHost(), IamClientApi.class);
+        List<OrganizationVO> organizationVOS = project.getService(IamService.class).listOrganizations();
+        organizationVOS.forEach(organizationVO -> {
+            orgComboBox.addItem(organizationVO);
+        });
     }
 
     private static class IssueTableModel extends AbstractTableModel {
@@ -191,7 +207,12 @@ public class ChoerodonPluginToolWindow {
 
     private void tryLogin(Project project) {
         LoginService loginService = project.getService(LoginService.class);
-        loginService.Login();
+        try {
+            loginService.Login();
+        } catch (Exception e) {
+            // todo 通知用户oauth认证信息失效，打开设置重新配置
+            e.printStackTrace();
+        }
     }
 
 
