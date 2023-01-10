@@ -1,7 +1,7 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
 public class OrganizationVO {
-    private Long tenantId;
+    private String tenantId;
     private String tenantName;
     private String tenantNum;
 
@@ -12,11 +12,11 @@ public class OrganizationVO {
         this.tenantName = tenantName;
     }
 
-    public Long getTenantId() {
+    public String getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(Long tenantId) {
+    public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
     }
 

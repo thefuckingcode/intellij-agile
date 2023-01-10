@@ -36,7 +36,7 @@
         <applicationService
                 serviceImplementation="com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState"/>
 
-        <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.LoginService"/>
+        <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.OauthService"/>
         <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.IamService"/>
         <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService"/>
         <projectService serviceImplementation="com.github.thefuckingcode.choerodonplugin.service.AgileService"/>

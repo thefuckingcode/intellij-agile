@@ -1,6 +1,7 @@
 package com.github.thefuckingcode.choerodonplugin.feign;
 
 import com.github.thefuckingcode.choerodonplugin.util.ProxyUtil;
+import com.intellij.ide.util.PropertiesComponent;
 import feign.Client;
 import feign.Feign;
 import feign.Logger;
@@ -11,7 +12,7 @@ import java.net.Proxy;
 import java.net.SocketAddress;
 
 public class ClientBuilder {
-    public static <T> T buildClient(String choerodonHost, Class<T> tClass) {
+    public static <T> T buildClient(Class<T> tClass) {
         ProxyUtil.ProxyProperties proxyProperties = ProxyUtil.parseProxy();
         Client client = new Client.Default(null, null);
         if (proxyProperties != null) {
@@ -25,6 +26,6 @@ public class ClientBuilder {
                 .client(client)
                 .retryer(Retryer.NEVER_RETRY)
                 .logLevel(Logger.Level.HEADERS)
-                .target(tClass, choerodonHost);
+                .target(tClass, PropertiesComponent.getInstance().getValue("choerodonHost"));
     }
 }

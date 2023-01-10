@@ -6,14 +6,20 @@ import feign.Util;
 
 public class ResponseUtil {
     public static <T> T getResult(Response response, Class<T> tClass) {
+        String body;
+        try {
+            body = new String(Util.toByteArray(response.body().asInputStream()), Util.UTF_8);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to read body");
+        }
         if (response.status() == 200) {
             try {
-                return JsonHelper.unmarshalByJackson(response.body().toString(), tClass);
+                return JsonHelper.unmarshalByJackson(body, tClass);
             } catch (Exception e) {
-                throw new RuntimeException(String.format("Failed to parse result,status code :%d ,response: %s", response.status(), response.body().toString()));
+                throw new RuntimeException(String.format("Failed to parse result,status code :%d ,response: %s", response.status(), body));
             }
         } else {
-            throw new RuntimeException(String.format("Failed to request,status code :%d ,response: %s", response.status(), response.body().toString()));
+            throw new RuntimeException(String.format("Failed to request,status code :%d ,response: %s", response.status(), body));
         }
     }
 

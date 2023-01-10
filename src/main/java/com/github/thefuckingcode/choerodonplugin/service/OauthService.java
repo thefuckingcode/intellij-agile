@@ -11,16 +11,16 @@ import feign.Response;
 
 import java.util.Map;
 
-public class LoginService {
+public class OauthService {
     private ChoerodonPluginOauthConfigState choerodonPluginOauthConfigState;
 
 
-    public LoginService() {
+    public OauthService() {
         choerodonPluginOauthConfigState = ApplicationManager.getApplication().getService(ChoerodonPluginOauthConfigState.class);
     }
 
     public void Login() {
-        OauthClientApi oauthClientApi = ClientBuilder.buildClient(choerodonPluginOauthConfigState.getChoerodonHost(), OauthClientApi.class);
+        OauthClientApi oauthClientApi = ClientBuilder.buildClient(OauthClientApi.class);
         Response response = oauthClientApi.login(choerodonPluginOauthConfigState.getClientId(),
                 choerodonPluginOauthConfigState.getClientSecret(),
                 choerodonPluginOauthConfigState.getGrantType(),

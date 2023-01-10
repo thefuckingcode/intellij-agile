@@ -1,22 +1,13 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.util.List;
-import java.util.*;
-import java.util.function.Function;
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState;
+import com.github.thefuckingcode.choerodonplugin.service.AgileService;
+import com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService;
 import com.github.thefuckingcode.choerodonplugin.service.IamService;
-import com.github.thefuckingcode.choerodonplugin.service.LoginService;
+import com.github.thefuckingcode.choerodonplugin.service.OauthService;
 import com.github.thefuckingcode.choerodonplugin.vo.IssueVO;
 import com.github.thefuckingcode.choerodonplugin.vo.OrganizationVO;
+import com.github.thefuckingcode.choerodonplugin.vo.PageVO;
 import com.github.thefuckingcode.choerodonplugin.vo.ProjectVO;
 import com.intellij.icons.AllIcons;
 import com.intellij.notification.Notification;
@@ -35,7 +26,20 @@ import com.intellij.ui.table.JBTable;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+
 public class ChoerodonPluginToolWindow {
+    private static final Map<String, DefaultComboBoxModel<ProjectVO>> COMBO_BOX_MODEL_MAP = new HashMap<>();
+    private static final List<String> INITIALIZED_ORG_IDS = new ArrayList<>();
+
     private Project project;
     private ChoerodonPluginOauthConfigState choerodonPluginOauthConfigState;
 
@@ -49,9 +53,17 @@ public class ChoerodonPluginToolWindow {
     private JComboBox<ProjectVO> projectComboBox;
 
     private JPanel actionPanel;
+    private ChoerodonBaseService choerodonBaseService;
+    private AgileService agileService;
+    private IamService iamService;
+    private OauthService oauthService;
 
     public ChoerodonPluginToolWindow(Project project) {
         this.project = project;
+        this.agileService = project.getService(AgileService.class);
+        this.iamService = project.getService(IamService.class);
+        this.oauthService = project.getService(OauthService.class);
+        this.choerodonBaseService = project.getService(ChoerodonBaseService.class);
         choerodonPluginOauthConfigState = ApplicationManager.getApplication().getService(ChoerodonPluginOauthConfigState.class);
         tryLogin(project);
 
@@ -124,27 +136,53 @@ public class ChoerodonPluginToolWindow {
         actionToolbar.setTargetComponent(this.getToolWindowContent());
 
         orgComboBox = new ComboBox<>();
-        orgComboBox.addItemListener(itemEvent -> {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED&& !Objects.equals(itemEvent.getItem().toString(), "---请选择组织---")) {
-                System.out.println(itemEvent.getItem());
-            }
-        });
         orgComboBox.setSize(200, -1);
-        setOrg(orgComboBox);
+
         projectComboBox = new ComboBox<>();
         projectComboBox.setSize(200, -1);
 
-        projectComboBox.addItem(new ProjectVO("---请选择项目---"));
+        setOrg(orgComboBox);
+        orgComboBox.addItemListener(itemEvent -> {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED && !Objects.equals(itemEvent.getItem().toString(), "---请选择组织---")) {
+                OrganizationVO organizationVO = (OrganizationVO) itemEvent.getItem();
+                if (INITIALIZED_ORG_IDS.contains(organizationVO.getTenantId())) {
+                    DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = COMBO_BOX_MODEL_MAP.get(organizationVO.getTenantId());
+                    projectComboBox.setModel(defaultComboBoxModel);
+                } else {
+                    INITIALIZED_ORG_IDS.add(organizationVO.getTenantId());
+                    // 查询选中的组织下的项目信息
+                    DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = COMBO_BOX_MODEL_MAP.get(organizationVO.getTenantId());
+                    PageVO<ProjectVO> pageProjects = choerodonBaseService.pageProjects(((OrganizationVO) itemEvent.getItem()).getTenantId(), 0);
+                    defaultComboBoxModel.addAll(pageProjects.getContent());
+                    if (pageProjects.getTotalPages() > 1) {
+                        ProjectVO clickForMoreProject = new ProjectVO("加载更多", organizationVO.getTenantId());
+                        Map<String, Object> additionalInfo = new HashMap<>();
+                        additionalInfo.put("currentPage", 0);
+                        clickForMoreProject.setAdditionalInfo(additionalInfo);
+                        defaultComboBoxModel.addElement(clickForMoreProject);
+                    }
+                    COMBO_BOX_MODEL_MAP.put(organizationVO.getTenantId(), defaultComboBoxModel);
+                    projectComboBox.setModel(defaultComboBoxModel);
+                }
+            }
+        });
 
-        ProjectVO projectVO=new ProjectVO("加载更多");
-        projectComboBox.addItem(projectVO);
+        projectComboBox.addItemListener(itemEvent -> {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED && Objects.equals(itemEvent.getItem().toString(), "加载更多")) {
+                ProjectVO clickForMoreProject = projectComboBox.getModel().getElementAt(projectComboBox.getModel().getSize() - 1);
 
-        projectComboBox.addItemListener(itemEvent->{
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED&& Objects.equals(itemEvent.getItem().toString(),"加载更多")) {
-                DefaultComboBoxModel<ProjectVO> model = (DefaultComboBoxModel) projectComboBox.getModel();
-                model.removeElement(projectVO);
-                model.addElement(new ProjectVO("test"+ new Date()));
-                model.addElement(projectVO);
+                Map<String, Object> additionalInfo = clickForMoreProject.getAdditionalInfo();
+                Integer currentPage = (Integer) additionalInfo.get("currentPage");
+                PageVO<ProjectVO> pageProjects = choerodonBaseService.pageProjects(clickForMoreProject.getTenantId(), currentPage + 1);
+                DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = (DefaultComboBoxModel) projectComboBox.getModel();
+                defaultComboBoxModel.removeElement(clickForMoreProject);
+                defaultComboBoxModel.addAll(pageProjects.getContent());
+                if (currentPage + 2 < pageProjects.getTotalPages()) {
+                    defaultComboBoxModel.addElement(clickForMoreProject);
+                    additionalInfo.put("currentPage", currentPage + 1);
+                }
+                COMBO_BOX_MODEL_MAP.put(clickForMoreProject.getTenantId(), defaultComboBoxModel);
+
             }
         });
 
@@ -176,8 +214,11 @@ public class ChoerodonPluginToolWindow {
 
     private void setOrg(JComboBox orgComboBox) {
         orgComboBox.addItem(new OrganizationVO("---请选择组织---"));
-        List<OrganizationVO> organizationVOS = project.getService(IamService.class).listOrganizations();
+        List<OrganizationVO> organizationVOS = iamService.listOrganizations();
         organizationVOS.forEach(organizationVO -> {
+            DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = new DefaultComboBoxModel<>();
+            defaultComboBoxModel.addElement(new ProjectVO("---请选择项目---"));
+            COMBO_BOX_MODEL_MAP.put(organizationVO.getTenantId(), defaultComboBoxModel);
             orgComboBox.addItem(organizationVO);
         });
 
@@ -216,13 +257,16 @@ public class ChoerodonPluginToolWindow {
     }
 
     private void tryLogin(Project project) {
-        LoginService loginService = project.getService(LoginService.class);
         try {
-            loginService.Login();
+            // 登录
+            oauthService.Login();
+            // 设置用户信息
+            iamService.currentUser();
         } catch (Exception e) {
             // todo 通知用户oauth认证信息失效，打开设置重新配置
             e.printStackTrace();
         }
+
     }
 
 

@@ -1,5 +1,6 @@
 package com.github.thefuckingcode.choerodonplugin.config;
 
+import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +27,7 @@ public class ChoerodonApplicationConfigurable implements Configurable {
     @Override
     public boolean isModified() {
         ChoerodonPluginOauthConfigState settings = ChoerodonPluginOauthConfigState.getInstance();
-        return !Objects.equals(settings.getChoerodonHost(),oauthConfigComponent.getChoerodonHost())||
+        return !Objects.equals(settings.getChoerodonHost(), oauthConfigComponent.getChoerodonHost()) ||
                 !Objects.equals(settings.getUsername(), oauthConfigComponent.getUsername()) ||
                 !Objects.equals(settings.getPassword(), oauthConfigComponent.getPassword()) ||
                 !Objects.equals(settings.getClientId(), oauthConfigComponent.getClientId()) ||
@@ -43,6 +44,8 @@ public class ChoerodonApplicationConfigurable implements Configurable {
         settings.setClientSecret(oauthConfigComponent.getClientSecret());
         settings.setGrantType(oauthConfigComponent.getGrantType());
         settings.setChoerodonHost(oauthConfigComponent.getChoerodonHost());
+
+        PropertiesComponent.getInstance().setValue("choerodonHost", oauthConfigComponent.getChoerodonHost());
     }
 
     @Override
