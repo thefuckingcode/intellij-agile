@@ -1,8 +1,18 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState;
-import com.github.thefuckingcode.choerodonplugin.feign.ClientBuilder;
-import com.github.thefuckingcode.choerodonplugin.feign.IamClientApi;
 import com.github.thefuckingcode.choerodonplugin.service.IamService;
 import com.github.thefuckingcode.choerodonplugin.service.LoginService;
 import com.github.thefuckingcode.choerodonplugin.vo.IssueVO;
@@ -24,19 +34,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
 
 public class ChoerodonPluginToolWindow {
     private Project project;
@@ -128,7 +125,7 @@ public class ChoerodonPluginToolWindow {
 
         orgComboBox = new ComboBox<>();
         orgComboBox.addItemListener(itemEvent -> {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED&& !Objects.equals(itemEvent.getItem().toString(), "---请选择组织---")) {
                 System.out.println(itemEvent.getItem());
             }
         });
@@ -136,8 +133,20 @@ public class ChoerodonPluginToolWindow {
         setOrg(orgComboBox);
         projectComboBox = new ComboBox<>();
         projectComboBox.setSize(200, -1);
-        projectComboBox.addItem(new ProjectVO("proj1"));
-        projectComboBox.addItem(new ProjectVO("proj2"));
+
+        projectComboBox.addItem(new ProjectVO("---请选择项目---"));
+
+        ProjectVO projectVO=new ProjectVO("加载更多");
+        projectComboBox.addItem(projectVO);
+
+        projectComboBox.addItemListener(itemEvent->{
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED&& Objects.equals(itemEvent.getItem().toString(),"加载更多")) {
+                DefaultComboBoxModel<ProjectVO> model = (DefaultComboBoxModel) projectComboBox.getModel();
+                model.removeElement(projectVO);
+                model.addElement(new ProjectVO("test"+ new Date()));
+                model.addElement(projectVO);
+            }
+        });
 
         SearchTextField searchTextField = new SearchTextField(false, null);
         searchTextField.getTextEditor().setToolTipText("Filter by substrings of branch names");
@@ -166,11 +175,12 @@ public class ChoerodonPluginToolWindow {
     }
 
     private void setOrg(JComboBox orgComboBox) {
-        IamClientApi iamClientApi = ClientBuilder.buildClient(ApplicationManager.getApplication().getService(ChoerodonPluginOauthConfigState.class).getChoerodonHost(), IamClientApi.class);
+        orgComboBox.addItem(new OrganizationVO("---请选择组织---"));
         List<OrganizationVO> organizationVOS = project.getService(IamService.class).listOrganizations();
         organizationVOS.forEach(organizationVO -> {
             orgComboBox.addItem(organizationVO);
         });
+
     }
 
     private static class IssueTableModel extends AbstractTableModel {
