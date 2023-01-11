@@ -1,11 +1,31 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
+import javax.swing.*;
+import java.math.BigDecimal;
+
+import static com.intellij.icons.AllIcons.ToolbarDecorator.AddIcon;
+
 public class IssueVO {
     private String issueNum;
     private String summary;
     private String status;
-    private String registeredHours;
-    private String remainHours;
+    private BigDecimal spentWorkTime;
+    private BigDecimal remainingTime;
+    private JLabel registerWorkTimeLabel;
+
+    public IssueVO() {
+        this.registerWorkTimeLabel = new JLabel();
+        registerWorkTimeLabel.setIcon(AddIcon);
+        registerWorkTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+    }
+
+    public JLabel getRegisterWorkTimeLabel() {
+        return registerWorkTimeLabel;
+    }
+
+    public void setRegisterWorkTimeLabel(JLabel registerWorkTimeLabel) {
+        this.registerWorkTimeLabel = registerWorkTimeLabel;
+    }
 
     public String getIssueNum() {
         return issueNum;
@@ -31,19 +51,19 @@ public class IssueVO {
         this.status = status;
     }
 
-    public String getRegisteredHours() {
-        return registeredHours;
+    public BigDecimal getSpentWorkTime() {
+        return spentWorkTime;
     }
 
-    public void setRegisteredHours(String registeredHours) {
-        this.registeredHours = registeredHours;
+    public void setSpentWorkTime(BigDecimal spentWorkTime) {
+        this.spentWorkTime = spentWorkTime;
     }
 
-    public String getRemainHours() {
-        return remainHours;
+    public BigDecimal getRemainingTime() {
+        return remainingTime;
     }
 
-    public void setRemainHours(String remainHours) {
-        this.remainHours = remainHours;
+    public void setRemainingTime(BigDecimal remainingTime) {
+        this.remainingTime = remainingTime;
     }
 }

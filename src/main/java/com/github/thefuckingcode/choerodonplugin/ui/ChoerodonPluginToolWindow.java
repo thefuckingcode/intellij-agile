@@ -5,10 +5,7 @@ import com.github.thefuckingcode.choerodonplugin.service.AgileService;
 import com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService;
 import com.github.thefuckingcode.choerodonplugin.service.IamService;
 import com.github.thefuckingcode.choerodonplugin.service.OauthService;
-import com.github.thefuckingcode.choerodonplugin.vo.IssueVO;
-import com.github.thefuckingcode.choerodonplugin.vo.OrganizationVO;
-import com.github.thefuckingcode.choerodonplugin.vo.PageVO;
-import com.github.thefuckingcode.choerodonplugin.vo.ProjectVO;
+import com.github.thefuckingcode.choerodonplugin.vo.*;
 import com.intellij.icons.AllIcons;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
@@ -31,7 +28,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
 import java.util.List;
 import java.util.*;
 import java.util.function.Function;
@@ -57,6 +56,7 @@ public class ChoerodonPluginToolWindow {
     private AgileService agileService;
     private IamService iamService;
     private OauthService oauthService;
+    private IssueTableModel issueTableModel;
 
     public ChoerodonPluginToolWindow(Project project) {
         this.project = project;
@@ -68,7 +68,7 @@ public class ChoerodonPluginToolWindow {
         tryLogin(project);
 
 
-        IssueTableModel issueTableModel = new IssueTableModel();
+        issueTableModel = new IssueTableModel();
 
         issueTable = new JBTable(issueTableModel) {
             @Override
@@ -89,6 +89,9 @@ public class ChoerodonPluginToolWindow {
 //                if (column == 4 || column == 5) {
 //                    return getLinkCellRenderer();
 //                }
+                if (column == 5) {
+                    return getRegisterCellRenderer();
+                }
                 return cellRenderer;
             }
 
@@ -167,22 +170,31 @@ public class ChoerodonPluginToolWindow {
             }
         });
 
+        projectComboBox.setEditable(true);
+
         projectComboBox.addItemListener(itemEvent -> {
-            if (itemEvent.getStateChange() == ItemEvent.SELECTED && Objects.equals(itemEvent.getItem().toString(), "加载更多")) {
-                ProjectVO clickForMoreProject = projectComboBox.getModel().getElementAt(projectComboBox.getModel().getSize() - 1);
+            if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                if (Objects.equals(itemEvent.getItem().toString(), "加载更多")) {
+                    ProjectVO clickForMoreProject = projectComboBox.getModel().getElementAt(projectComboBox.getModel().getSize() - 1);
 
-                Map<String, Object> additionalInfo = clickForMoreProject.getAdditionalInfo();
-                Integer currentPage = (Integer) additionalInfo.get("currentPage");
-                PageVO<ProjectVO> pageProjects = choerodonBaseService.pageProjects(clickForMoreProject.getTenantId(), currentPage + 1);
-                DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = (DefaultComboBoxModel) projectComboBox.getModel();
-                defaultComboBoxModel.removeElement(clickForMoreProject);
-                defaultComboBoxModel.addAll(pageProjects.getContent());
-                if (currentPage + 2 < pageProjects.getTotalPages()) {
-                    defaultComboBoxModel.addElement(clickForMoreProject);
-                    additionalInfo.put("currentPage", currentPage + 1);
+                    Map<String, Object> additionalInfo = clickForMoreProject.getAdditionalInfo();
+                    Integer currentPage = (Integer) additionalInfo.get("currentPage");
+                    PageVO<ProjectVO> pageProjects = choerodonBaseService.pageProjects(clickForMoreProject.getTenantId(), currentPage + 1);
+                    DefaultComboBoxModel<ProjectVO> defaultComboBoxModel = (DefaultComboBoxModel) projectComboBox.getModel();
+                    defaultComboBoxModel.removeElement(clickForMoreProject);
+                    defaultComboBoxModel.addAll(pageProjects.getContent());
+                    if (currentPage + 2 < pageProjects.getTotalPages()) {
+                        defaultComboBoxModel.addElement(clickForMoreProject);
+                        additionalInfo.put("currentPage", currentPage + 1);
+                    }
+                    COMBO_BOX_MODEL_MAP.put(clickForMoreProject.getTenantId(), defaultComboBoxModel);
+                } else {
+                    ProjectVO projectVO = (ProjectVO) itemEvent.getItem();
+                    PageVO<IssueListFieldKVVO> issueListFieldKVVOPageVO = agileService.pageIssues(projectVO.getId(), 0);
+                    List<IssueVO> issueVOS = IssueListFieldKVVO.toIssueVO(issueListFieldKVVOPageVO.getContent());
+                    issueTableModel.rows.addAll(issueVOS);
+                    issueTableModel.fireTableDataChanged();
                 }
-                COMBO_BOX_MODEL_MAP.put(clickForMoreProject.getTenantId(), defaultComboBoxModel);
-
             }
         });
 
@@ -230,8 +242,9 @@ public class ChoerodonPluginToolWindow {
                 new TableRowDefinition("工作项编号", IssueVO::getIssueNum),
                 new TableRowDefinition("概要", IssueVO::getSummary),
                 new TableRowDefinition("状态", IssueVO::getStatus),
-                new TableRowDefinition("已登记时间", IssueVO::getRegisteredHours),
-                new TableRowDefinition("剩余预估时间", IssueVO::getRemainHours));
+                new TableRowDefinition("已登记时间", IssueVO::getSpentWorkTime),
+                new TableRowDefinition("剩余预估时间", IssueVO::getRemainingTime),
+                new TableRowDefinition("登记工时", IssueVO::getRegisterWorkTimeLabel));
 
         @Override
         public int getRowCount() {
@@ -291,4 +304,16 @@ public class ChoerodonPluginToolWindow {
             this.cellContent = cellContent;
         }
     }
+
+    private TableCellRenderer getRegisterCellRenderer() {
+
+        return new TableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                return (JLabel) value;
+            }
+        };
+    }
+
+
 }
