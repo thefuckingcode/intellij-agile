@@ -1,5 +1,17 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
 import com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState;
 import com.github.thefuckingcode.choerodonplugin.service.AgileService;
 import com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService;
@@ -22,18 +34,6 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.util.List;
-import java.util.*;
-import java.util.function.Function;
 
 public class ChoerodonPluginToolWindow {
     private static final Map<String, DefaultComboBoxModel<ProjectVO>> COMBO_BOX_MODEL_MAP = new HashMap<>();
@@ -222,6 +222,7 @@ public class ChoerodonPluginToolWindow {
 
         tablePanel.add(actionPanel, BorderLayout.NORTH, 0);
         tablePanel.add(new JBScrollPane(issueTable), BorderLayout.CENTER, 1);
+        tablePanel.add(createPageButtonPanel(), BorderLayout.SOUTH, 2);
     }
 
     private void setOrg(JComboBox orgComboBox) {
@@ -233,7 +234,6 @@ public class ChoerodonPluginToolWindow {
             COMBO_BOX_MODEL_MAP.put(organizationVO.getTenantId(), defaultComboBoxModel);
             orgComboBox.addItem(organizationVO);
         });
-
     }
 
     private static class IssueTableModel extends AbstractTableModel {
@@ -315,5 +315,53 @@ public class ChoerodonPluginToolWindow {
         };
     }
 
+    private JPanel createPageButtonPanel() {
+        AnActionButton lastPage = new AnActionButton("上一页", AllIcons.General.ArrowLeft) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                NotificationGroup notificationGroup = new NotificationGroup("lastPage", NotificationDisplayType.BALLOON, false);
+                /**
+                 * content :  通知内容
+                 * type  ：通知的类型，warning,info,error
+                 */
+                Notification notification = notificationGroup.createNotification("测试通知", MessageType.INFO);
+                Notifications.Bus.notify(notification);
+            }
+
+            @Override
+            public JComponent getContextComponent() {
+                return issueTable;
+            }
+        };
+
+        AnActionButton nextPage = new AnActionButton("下一页", AllIcons.General.ArrowRight) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                NotificationGroup notificationGroup = new NotificationGroup("nextPage", NotificationDisplayType.BALLOON, false);
+                /**
+                 * content :  通知内容
+                 * type  ：通知的类型，warning,info,error
+                 */
+                Notification notification = notificationGroup.createNotification("测试通知", MessageType.INFO);
+                Notifications.Bus.notify(notification);
+            }
+
+            @Override
+            public JComponent getContextComponent() {
+                return issueTable;
+            }
+        };
+
+        DefaultActionGroup pageGroup = new DefaultActionGroup(lastPage, nextPage);
+
+        ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, pageGroup, true);
+        actionToolbar.setTargetComponent(this.getToolWindowContent());
+
+
+        JPanel pagePanel = new JPanel(new MigLayout("ins 0", "1[left]10[left]10[left]10[right]", "center"));
+        pagePanel.add(actionToolbar.getComponent());
+
+        return pagePanel;
+    }
 
 }
