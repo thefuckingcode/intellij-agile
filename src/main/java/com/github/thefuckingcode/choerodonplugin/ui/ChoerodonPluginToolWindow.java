@@ -1,17 +1,5 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.util.List;
-import java.util.*;
-import java.util.function.Function;
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-
 import com.github.thefuckingcode.choerodonplugin.config.ChoerodonPluginOauthConfigState;
 import com.github.thefuckingcode.choerodonplugin.service.AgileService;
 import com.github.thefuckingcode.choerodonplugin.service.ChoerodonBaseService;
@@ -30,12 +18,25 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.SearchTextField;
-import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
 import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+
 public class ChoerodonPluginToolWindow {
+
+    private static final String PAGE_NUM_TEMPLATE = "%d/%d";
     private static final Map<String, DefaultComboBoxModel<ProjectVO>> COMBO_BOX_MODEL_MAP = new HashMap<>();
     private static final List<String> INITIALIZED_ORG_IDS = new ArrayList<>();
 
@@ -57,6 +58,11 @@ public class ChoerodonPluginToolWindow {
     private IamService iamService;
     private OauthService oauthService;
     private IssueTableModel issueTableModel;
+    private AnActionButton lastPage;
+    private AnActionButton nextPage;
+    private JLabel issuePageLabel;
+    private JPanel pagePanel;
+    private JLabel projectInfoLabel;
 
     public ChoerodonPluginToolWindow(Project project) {
         this.project = project;
@@ -74,21 +80,6 @@ public class ChoerodonPluginToolWindow {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 TableCellRenderer cellRenderer = super.getCellRenderer(row, column);
-//                if (column == 0) {
-//                    return getProjectCellRenderer();
-//                }
-//                if (column == 1) {
-//                    return getBranchCellRenderer();
-//                }
-//                if (column == 2) {
-//                    return getStatusCellRenderer();
-//                }
-//                if (column == 3) {
-//                    return getDateCellRenderer();
-//                }
-//                if (column == 4 || column == 5) {
-//                    return getLinkCellRenderer();
-//                }
                 if (column == 5) {
                     return getRegisterCellRenderer();
                 }
@@ -105,6 +96,8 @@ public class ChoerodonPluginToolWindow {
                 return component;
             }
         };
+        issueTable.setPreferredSize(new Dimension(-1, 150));
+        issueTable.setMaximumSize(new Dimension(-1, 150));
 
         createTablePanel();
     }
@@ -170,7 +163,7 @@ public class ChoerodonPluginToolWindow {
             }
         });
 
-        projectComboBox.setEditable(true);
+//        projectComboBox.setEditable(true);
 
         projectComboBox.addItemListener(itemEvent -> {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
@@ -192,8 +185,12 @@ public class ChoerodonPluginToolWindow {
                     ProjectVO projectVO = (ProjectVO) itemEvent.getItem();
                     PageVO<IssueListFieldKVVO> issueListFieldKVVOPageVO = agileService.pageIssues(projectVO.getId(), 0);
                     List<IssueVO> issueVOS = IssueListFieldKVVO.toIssueVO(issueListFieldKVVOPageVO.getContent());
+                    issueTableModel.rows.clear();
                     issueTableModel.rows.addAll(issueVOS);
                     issueTableModel.fireTableDataChanged();
+                    if (issueListFieldKVVOPageVO.getTotalPages() > 1) {
+                        createPagePanel(issueListFieldKVVOPageVO.getTotalPages());
+                    }
                 }
             }
         });
@@ -221,8 +218,7 @@ public class ChoerodonPluginToolWindow {
         actionPanel.add(actionToolbar.getComponent());
 
         tablePanel.add(actionPanel, BorderLayout.NORTH, 0);
-        tablePanel.add(new JBScrollPane(issueTable), BorderLayout.CENTER, 1);
-        tablePanel.add(createPageButtonPanel(), BorderLayout.SOUTH, 2);
+        tablePanel.add(issueTable, BorderLayout.CENTER, 1);
     }
 
     private void setOrg(JComboBox orgComboBox) {
@@ -306,7 +302,6 @@ public class ChoerodonPluginToolWindow {
     }
 
     private TableCellRenderer getRegisterCellRenderer() {
-
         return new TableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -315,17 +310,14 @@ public class ChoerodonPluginToolWindow {
         };
     }
 
-    private JPanel createPageButtonPanel() {
-        AnActionButton lastPage = new AnActionButton("上一页", AllIcons.General.ArrowLeft) {
+    private void createPagePanel(int totalPage) {
+        issuePageLabel = new JLabel();
+        issuePageLabel.setText(String.format(PAGE_NUM_TEMPLATE, 1, totalPage));
+
+        lastPage = new AnActionButton("上一页", AllIcons.General.ArrowLeft) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-                NotificationGroup notificationGroup = new NotificationGroup("lastPage", NotificationDisplayType.BALLOON, false);
-                /**
-                 * content :  通知内容
-                 * type  ：通知的类型，warning,info,error
-                 */
-                Notification notification = notificationGroup.createNotification("测试通知", MessageType.INFO);
-                Notifications.Bus.notify(notification);
+                updateTablePanelAndPagePanel(false);
             }
 
             @Override
@@ -334,16 +326,10 @@ public class ChoerodonPluginToolWindow {
             }
         };
 
-        AnActionButton nextPage = new AnActionButton("下一页", AllIcons.General.ArrowRight) {
+        nextPage = new AnActionButton("下一页", AllIcons.General.ArrowRight) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
-                NotificationGroup notificationGroup = new NotificationGroup("nextPage", NotificationDisplayType.BALLOON, false);
-                /**
-                 * content :  通知内容
-                 * type  ：通知的类型，warning,info,error
-                 */
-                Notification notification = notificationGroup.createNotification("测试通知", MessageType.INFO);
-                Notifications.Bus.notify(notification);
+                updateTablePanelAndPagePanel(true);
             }
 
             @Override
@@ -357,11 +343,46 @@ public class ChoerodonPluginToolWindow {
         ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, pageGroup, true);
         actionToolbar.setTargetComponent(this.getToolWindowContent());
 
+        pagePanel = new JPanel();
 
-        JPanel pagePanel = new JPanel(new MigLayout("ins 0", "1[left]10[left]10[left]10[right]", "center"));
-        pagePanel.add(actionToolbar.getComponent());
+        pagePanel.add(issuePageLabel, BorderLayout.CENTER);
+        pagePanel.add(actionToolbar.getComponent(), BorderLayout.CENTER);
 
-        return pagePanel;
+        tablePanel.setLayout(new BorderLayout());
+        tablePanel.add(pagePanel, BorderLayout.SOUTH, 2);
+        tablePanel.revalidate();
     }
 
+    private void updateTablePanelAndPagePanel(Boolean add) {
+        String[] page = issuePageLabel.getText().split("/");
+        Integer oldCurrentPage = Integer.parseInt(page[0]);
+        Integer totalPage = Integer.parseInt(page[1]);
+
+        int newCurrentPage;
+        if (add) {
+            newCurrentPage = oldCurrentPage + 1;
+            if (newCurrentPage == totalPage) {
+                nextPage.setEnabled(false);
+            }
+            // 比如这是第一页的情况，上一页被禁用了，现在需要启用
+            lastPage.setEnabled(true);
+        } else {
+            newCurrentPage = oldCurrentPage - 1;
+            if (newCurrentPage == 1) {
+                lastPage.setEnabled(false);
+            }
+            nextPage.setEnabled(true);
+        }
+        issuePageLabel.setText(String.format(PAGE_NUM_TEMPLATE, newCurrentPage, totalPage));
+
+        ProjectVO projectVO = (ProjectVO) projectComboBox.getSelectedItem();
+        if (projectVO != null) {
+            PageVO<IssueListFieldKVVO> issueListFieldKVVOPageVO = agileService.pageIssues(projectVO.getId(), newCurrentPage - 1);
+            List<IssueVO> issueVOS = IssueListFieldKVVO.toIssueVO(issueListFieldKVVOPageVO.getContent());
+            issueTableModel.rows.clear();
+            issueTableModel.rows.addAll(issueVOS);
+            issueTableModel.fireTableDataChanged();
+        }
+        pagePanel.revalidate();
+    }
 }
