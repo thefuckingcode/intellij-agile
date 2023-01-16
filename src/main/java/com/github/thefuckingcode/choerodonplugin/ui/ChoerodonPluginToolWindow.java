@@ -18,8 +18,8 @@ import com.intellij.openapi.ui.ComboBox;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.ui.AnActionButton;
 import com.intellij.ui.SearchTextField;
+import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.table.JBTable;
-import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -47,7 +47,6 @@ public class ChoerodonPluginToolWindow {
     private JPanel toolWindowContent;
     private JTable issueTable;
     private JPanel tablePanel;
-    private JScrollPane tableScrollPanel;
 
     private JComboBox<OrganizationVO> orgComboBox;
     private JComboBox<ProjectVO> projectComboBox;
@@ -62,7 +61,9 @@ public class ChoerodonPluginToolWindow {
     private AnActionButton nextPage;
     private JLabel issuePageLabel;
     private JPanel pagePanel;
+    private ActionToolbar turnPageActionToolbar;
     private JLabel projectInfoLabel;
+    private JBScrollPane jbScrollPane;
 
     public ChoerodonPluginToolWindow(Project project) {
         this.project = project;
@@ -72,7 +73,6 @@ public class ChoerodonPluginToolWindow {
         this.choerodonBaseService = project.getService(ChoerodonBaseService.class);
         choerodonPluginOauthConfigState = ApplicationManager.getApplication().getService(ChoerodonPluginOauthConfigState.class);
         tryLogin(project);
-
 
         issueTableModel = new IssueTableModel();
 
@@ -96,8 +96,10 @@ public class ChoerodonPluginToolWindow {
                 return component;
             }
         };
-        issueTable.setPreferredSize(new Dimension(-1, 150));
-        issueTable.setMaximumSize(new Dimension(-1, 150));
+
+        tablePanel = new JPanel(new BorderLayout());
+        jbScrollPane = new JBScrollPane(issueTable);
+        jbScrollPane.setSize(new Dimension(300, 300));
 
         createTablePanel();
     }
@@ -182,6 +184,16 @@ public class ChoerodonPluginToolWindow {
                     }
                     COMBO_BOX_MODEL_MAP.put(clickForMoreProject.getTenantId(), defaultComboBoxModel);
                 } else {
+                    if (turnPageActionToolbar != null) {
+                        actionPanel.remove(turnPageActionToolbar.getComponent());
+                        turnPageActionToolbar = null;
+                    }
+
+                    if (pagePanel != null) {
+                        actionPanel.remove(pagePanel);
+                        pagePanel = null;
+                        issuePageLabel = null;
+                    }
                     ProjectVO projectVO = (ProjectVO) itemEvent.getItem();
                     PageVO<IssueListFieldKVVO> issueListFieldKVVOPageVO = agileService.pageIssues(projectVO.getId(), 0);
                     List<IssueVO> issueVOS = IssueListFieldKVVO.toIssueVO(issueListFieldKVVOPageVO.getContent());
@@ -211,14 +223,16 @@ public class ChoerodonPluginToolWindow {
             }
         });
 
-        actionPanel = new JPanel(new MigLayout("ins 0", "1[left]10[left]10[left]10[right]", "center"));
+        actionPanel = new JPanel();
         actionPanel.add(orgComboBox);
         actionPanel.add(projectComboBox);
         actionPanel.add(searchTextField);
         actionPanel.add(actionToolbar.getComponent());
 
         tablePanel.add(actionPanel, BorderLayout.NORTH, 0);
-        tablePanel.add(issueTable, BorderLayout.CENTER, 1);
+        tablePanel.add(jbScrollPane, BorderLayout.CENTER, 1);
+
+        toolWindowContent.add(tablePanel);
     }
 
     private void setOrg(JComboBox orgComboBox) {
@@ -326,6 +340,8 @@ public class ChoerodonPluginToolWindow {
             }
         };
 
+        lastPage.setEnabled(false);
+
         nextPage = new AnActionButton("下一页", AllIcons.General.ArrowRight) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent e) {
@@ -338,19 +354,17 @@ public class ChoerodonPluginToolWindow {
             }
         };
 
-        DefaultActionGroup pageGroup = new DefaultActionGroup(lastPage, nextPage);
+        DefaultActionGroup turnPageActionGroup = new DefaultActionGroup(lastPage, nextPage);
 
-        ActionToolbar actionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, pageGroup, true);
-        actionToolbar.setTargetComponent(this.getToolWindowContent());
+        turnPageActionToolbar = ActionManager.getInstance().createActionToolbar(ActionPlaces.TOOLBAR, turnPageActionGroup, true);
+        turnPageActionToolbar.setTargetComponent(this.getToolWindowContent());
 
         pagePanel = new JPanel();
-
         pagePanel.add(issuePageLabel, BorderLayout.CENTER);
-        pagePanel.add(actionToolbar.getComponent(), BorderLayout.CENTER);
 
-        tablePanel.setLayout(new BorderLayout());
-        tablePanel.add(pagePanel, BorderLayout.SOUTH, 2);
-        tablePanel.revalidate();
+        actionPanel.add(turnPageActionToolbar.getComponent());
+        actionPanel.add(pagePanel);
+        actionPanel.revalidate();
     }
 
     private void updateTablePanelAndPagePanel(Boolean add) {
