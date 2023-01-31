@@ -1,30 +1,36 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
+import com.github.thefuckingcode.choerodonplugin.ui.WorkHourDialog;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.util.Disposer;
+
 import javax.swing.*;
+import java.awt.*;
 import java.math.BigDecimal;
 
 import static com.intellij.icons.AllIcons.ToolbarDecorator.AddIcon;
 
 public class IssueVO {
+    private String issueId;
     private String issueNum;
     private String summary;
     private String status;
     private BigDecimal spentWorkTime;
     private BigDecimal remainingTime;
-    private JLabel registerWorkTimeLabel;
+    private JButton submitWorkTimeButton;
 
     public IssueVO() {
-        this.registerWorkTimeLabel = new JLabel();
-        registerWorkTimeLabel.setIcon(AddIcon);
-        registerWorkTimeLabel.setHorizontalAlignment(JLabel.CENTER);
+        submitWorkTimeButton = new JButton();
+        submitWorkTimeButton.setIcon(AddIcon);
+        submitWorkTimeButton.setHorizontalAlignment(JLabel.CENTER);
     }
 
-    public JLabel getRegisterWorkTimeLabel() {
-        return registerWorkTimeLabel;
+    public JButton getSubmitWorkTimeButton() {
+        return submitWorkTimeButton;
     }
 
-    public void setRegisterWorkTimeLabel(JLabel registerWorkTimeLabel) {
-        this.registerWorkTimeLabel = registerWorkTimeLabel;
+    public void setSubmitWorkTimeButton(JButton submitWorkTimeButton) {
+        this.submitWorkTimeButton = submitWorkTimeButton;
     }
 
     public String getIssueNum() {
@@ -65,5 +71,48 @@ public class IssueVO {
 
     public void setRemainingTime(BigDecimal remainingTime) {
         this.remainingTime = remainingTime;
+    }
+
+    public static class SubmitWorkHourEditor extends DefaultCellEditor {
+        private JButton submitButton;
+
+        public SubmitWorkHourEditor(JCheckBox checkBox) {
+            super(checkBox);
+        }
+
+        public SubmitWorkHourEditor(JComboBox comboBox) {
+            super(comboBox);
+        }
+
+        public SubmitWorkHourEditor(JTextField textField) {
+            super(textField);
+        }
+
+
+        /*
+        重写编辑器方法，返回一个按钮给JTable
+        */
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            submitButton = (JButton) value;
+            return submitButton;
+        }
+
+        public JButton getSubmitButton() {
+            return submitButton;
+        }
+
+        public void setSubmitButton(JButton submitButton) {
+            this.submitButton = submitButton;
+        }
+    }
+
+    public String getIssueId() {
+        return issueId;
+    }
+
+    public void setIssueId(String issueId) {
+        this.issueId = issueId;
     }
 }

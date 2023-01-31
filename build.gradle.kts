@@ -23,6 +23,7 @@ dependencies {
     implementation("io.github.openfeign:feign-core:12.1")
     implementation("io.github.openfeign.form:feign-form:3.8.0")
     implementation("io.github.openfeign:feign-slf4j:12.1")
+    implementation(files("/Users/lihao/Downloads/datepicker.jar"))
 }
 
 tasks {

@@ -1,14 +1,11 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.io.Serializable;
 
 /**
  * @author superlee
  * @since 2022-11-02
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Field implements Serializable {
     private String fieldCode;
     private Long fieldId;

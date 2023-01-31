@@ -1,5 +1,9 @@
 package com.github.thefuckingcode.choerodonplugin.vo;
 
+import com.github.thefuckingcode.choerodonplugin.ui.WorkHourDialog;
+import com.intellij.openapi.Disposable;
+import com.intellij.openapi.util.Disposer;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -9,7 +13,7 @@ import java.util.stream.Collectors;
 public class IssueListFieldKVVO {
 
 
-    private Long issueId;
+    private String issueId;
 
     private String issueNum;
 
@@ -163,15 +167,20 @@ public class IssueListFieldKVVO {
             issueVO.setRemainingTime(issueListFieldKVVO.getRemainingTime());
             issueVO.setStatus(issueListFieldKVVO.getStatusMapVO().getName());
             issueVO.setSummary(issueListFieldKVVO.getSummary());
+            issueVO.setIssueId(issueListFieldKVVO.getIssueId());
+            issueVO.getSubmitWorkTimeButton().addActionListener(e -> {
+                final Disposable disposable = Disposer.newDisposable();
+                new WorkHourDialog(disposable, issueListFieldKVVO.getProjectId(), issueListFieldKVVO.getIssueId()).showDialog();
+            });
             return issueVO;
         }).collect(Collectors.toList());
     }
 
-    public Long getIssueId() {
+    public String getIssueId() {
         return issueId;
     }
 
-    public void setIssueId(Long issueId) {
+    public void setIssueId(String issueId) {
         this.issueId = issueId;
     }
 

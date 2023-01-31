@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -84,6 +85,23 @@ public class ChoerodonPluginToolWindow {
                     return getRegisterCellRenderer();
                 }
                 return cellRenderer;
+            }
+
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                if (column == 5) {
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public TableCellEditor getCellEditor(int row, int column) {
+                TableCellEditor tableCellEditor = super.getCellEditor(row, column);
+                if (column == 5) {
+                    return getTableCellEditor();
+                }
+                return tableCellEditor;
             }
 
             @NotNull
@@ -254,7 +272,7 @@ public class ChoerodonPluginToolWindow {
                 new TableRowDefinition("状态", IssueVO::getStatus),
                 new TableRowDefinition("已登记时间", IssueVO::getSpentWorkTime),
                 new TableRowDefinition("剩余预估时间", IssueVO::getRemainingTime),
-                new TableRowDefinition("登记工时", IssueVO::getRegisterWorkTimeLabel));
+                new TableRowDefinition("登记工时", IssueVO::getSubmitWorkTimeButton));
 
         @Override
         public int getRowCount() {
@@ -319,9 +337,13 @@ public class ChoerodonPluginToolWindow {
         return new TableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                return (JLabel) value;
+                return (JButton) value;
             }
         };
+    }
+
+    private TableCellEditor getTableCellEditor() {
+        return new IssueVO.SubmitWorkHourEditor(new JTextField());
     }
 
     private void createPagePanel(int totalPage) {
