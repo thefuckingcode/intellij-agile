@@ -1,15 +1,15 @@
 package com.github.thefuckingcode.choerodonplugin.ui;
 
-import com.intellij.openapi.Disposable;
-import org.jdesktop.swingx.JXDatePicker;
+import static com.github.thefuckingcode.choerodonplugin.util.DatePickerUtil.getDatePicker;
 
-import javax.swing.*;
 import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import javax.swing.*;
 
-import static com.github.thefuckingcode.choerodonplugin.util.DatePickerUtil.getDatePicker;
+import com.intellij.openapi.Disposable;
+import org.jdesktop.swingx.JXDatePicker;
 
 public class WorkHourDialog extends JDialog {
     private JPanel contentPane;
@@ -17,6 +17,9 @@ public class WorkHourDialog extends JDialog {
     private JButton buttonCancel;
     private JPanel info;
     private final Disposable disposable;
+    private JLabel pickDateLabel;
+    private JLabel workHourLabel;
+    private JTextArea workHour;
 
     public WorkHourDialog(Disposable disposable, Long projectId, String issueId) {
         this.disposable = disposable;
@@ -25,10 +28,21 @@ public class WorkHourDialog extends JDialog {
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
 
+        pickDateLabel = new JLabel();
+        pickDateLabel.setText("选择时间");
+        info.add(pickDateLabel);
+
         final JXDatePicker datepick;
         datepick = getDatePicker();
 
         info.add(datepick);
+
+        workHourLabel = new JLabel();
+        workHourLabel.setText("工时时长");
+        info.add(workHourLabel);
+
+//        workHour = new JTextArea();
+//        info.add(workHour);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {

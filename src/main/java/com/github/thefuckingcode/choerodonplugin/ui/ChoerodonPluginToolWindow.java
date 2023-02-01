@@ -183,8 +183,6 @@ public class ChoerodonPluginToolWindow {
             }
         });
 
-//        projectComboBox.setEditable(true);
-
         projectComboBox.addItemListener(itemEvent -> {
             if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 if (Objects.equals(itemEvent.getItem().toString(), "加载更多")) {
